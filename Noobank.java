@@ -68,12 +68,11 @@ class ContaPoupanca extends Noobank {
 
 class ContaAplicacao extends Noobank {
 
-    private double juros, dinheiroAplicado, taxaMulta, valorMulta = 0, saldoFundoImobiliario, dinheiroRetirado;
+    private double dinheiroAplicado, taxaMulta, valorMulta = 0, saldoFundoImobiliario, dinheiroRetirado;
     private boolean vencido = true;
 
-    public ContaAplicacao(int nConta, double depositoInicial, double taxaMulta) {
+    public ContaAplicacao(int nConta, double depositoInicial) {
         super(nConta, depositoInicial);
-        this.taxaMulta = taxaMulta/100;
     }
 
     public void setVencida() {
@@ -90,12 +89,12 @@ class ContaAplicacao extends Noobank {
             System.out.println("Não está vencido");
     }
 
-    public void setTaxaJuros(double juros) {
-        this.juros = juros;
+    public void setTaxaMulta(double taxaMulta) {
+        this.taxaMulta = taxaMulta;
     }
 
-    public void getTaxaJuros() {
-        System.out.println("Taxa "+juros+"%");
+    public void getTaxaMulta() {
+        System.out.println("Taxa "+taxaMulta+"%");
     }
 
     public void aplicarDinheiro(double dinheiroAplicado) {
@@ -105,7 +104,7 @@ class ContaAplicacao extends Noobank {
 
     public void sacarFundoImobiliario (double dinheiroRetirado) {
         if (vencido) {
-            valorMulta = dinheiroRetirado * taxaMulta;
+            valorMulta = dinheiroRetirado * (taxaMulta/100);
             saldoFundoImobiliario -= dinheiroRetirado + valorMulta;           
             System.out.println("Valor da multa (você retirou antes do contrato): R$" + valorMulta);
             System.out.println("Dinheiro do fundo imobiliário retirado com multa: R$" + (dinheiroRetirado - valorMulta));
@@ -226,11 +225,11 @@ public class Main {
     
         // Conta Aplicação
         System.out.println("\nCONTA APLICAÇÃO: ");
-        ContaAplicacao contaAplicacao = new ContaAplicacao(333, 400, 5);
-        contaAplicacao.setTaxaJuros(5);
-        contaAplicacao.aplicarDinheiro(100);
+        ContaAplicacao contaAplicacao = new ContaAplicacao(333, 400);
+        contaAplicacao.setTaxaMulta(5);
+        contaAplicacao.aplicarDinheiro(200);
         contaAplicacao.getVencida();
-        contaAplicacao.getTaxaJuros();
+        contaAplicacao.getTaxaMulta();
         contaAplicacao.sacarFundoImobiliario(100);
         contaAplicacao.resetSaldo();
 
