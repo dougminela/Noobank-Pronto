@@ -3,47 +3,50 @@ import java.util.Scanner;
 class Noobank {
 	
     public double saldo, depositoInicial, saque, credito;
-    int nConta;
+    public int nConta;
 
     public Noobank(int nConta, double depositoInicial) {
         this.nConta = nConta;
         this.depositoInicial = depositoInicial;
         saldo += depositoInicial;
-        System.out.println("Depósito inicial: " + depositoInicial + " reais.");
+        System.out.println("Depósito inicial na conta pix: R$" + depositoInicial);
     }
 
     public void depositar(double deposito) {
         saldo += deposito;
-        System.out.println("Você depositou: " + deposito + " reais.");
+        System.out.println("Você depositou: R$" + deposito);
     }
 
     public void getSaldo() {
-        System.out.println("Saldo atual da conta: " + saldo);
+        System.out.println("Saldo atual da conta "+ nConta + ": R$" + saldo);
     }
 
     public void sacar(double saque) {
         saldo -= saque;
-        System.out.println("Você sacou: " + saque + " reais.");
+        System.out.println("Você sacou R$" + saque);
     }
  
     public void credito(double credito) {
         if (credito < saldo) {
-            System.out.println("Crédito no valor de R$ " + credito + " liberado.");
+            System.out.println("Crédito no valor de R$" + credito + " liberado.");
         } else {
-            System.out.println("Crédito no valor de R$ " + credito + " não foi liberado.");
+            System.out.println("Crédito no valor de R$" + credito + " não foi liberado.");
             System.out.println("Você não tem acesso a esse valor em crédito");
         }
+    }
+
+    public void resetSaldo() {
+        saldo = 0;
     }
 
 }
 
 class ContaPoupanca extends Noobank {
 
-    public double pagamentoJuros, juros, saldoPoupanca;
+    private double pagamentoJuros, juros, pcntJuros;
 
     public ContaPoupanca(int nConta, double depositoInicial) {
         super(nConta, depositoInicial);
-        saldoPoupanca += depositoInicial;
     }
 
     public void setJuros (int juros) {
@@ -51,37 +54,36 @@ class ContaPoupanca extends Noobank {
     }
 
     public void pagarJuros() {
-        pagamentoJuros = saldoPoupanca * (juros / 100);
-        saldoPoupanca += pagamentoJuros;
-        System.out.println("Valor do juros: " + pagamentoJuros);
-        System.out.println("Seu saldo atual é: " + (saldoPoupanca + pagamentoJuros));
+        pcntJuros = juros /100;
+        pagamentoJuros = pcntJuros * saldo;
+        saldo += pagamentoJuros;
+        System.out.println("Seu dinheiro rendeu R$" + pagamentoJuros);
     }
 
-    public double getTaxaJuros () {
-        return pagamentoJuros;
+    public void getTaxaJuros () {
+        System.out.println("A taxa do juros é "+juros+"%");
     }
 
 }
 
 class ContaAplicacao extends Noobank {
 
-    private double pagamentoJuros, juros, dinheiroAplicado, taxaMulta, valorMulta = 0, saldoContaAplicacao;
+    private double juros, dinheiroAplicado, taxaMulta, valorMulta = 0, saldoFundoImobiliario, dinheiroRetirado;
     private boolean vencido = true;
 
     public ContaAplicacao(int nConta, double depositoInicial, double taxaMulta) {
         super(nConta, depositoInicial);
-        this.taxaMulta = taxaMulta;
-        saldoContaAplicacao += depositoInicial;
+        this.taxaMulta = taxaMulta/100;
     }
 
-    public void vencida() {
+    public void setVencida() {
         if (vencido)
             vencido = false;
         else
             vencido = true;
     }
 
-    public void estaVencida() {
+    public void getVencida() {
         if (vencido)
             System.out.println("Está vencido");
         else
@@ -92,113 +94,109 @@ class ContaAplicacao extends Noobank {
         this.juros = juros;
     }
 
-    public double getTaxaJuros() {
-        return juros;
+    public void getTaxaJuros() {
+        System.out.println("Taxa "+juros+"%");
     }
 
-    public void AplicarDinheiro(double dinheiroAplicado) {
-        dinheiroAplicado += dinheiroAplicado;
+    public void aplicarDinheiro(double dinheiroAplicado) {
+        saldoFundoImobiliario += dinheiroAplicado;
+        System.out.println("Você aplicou R$"+dinheiroAplicado+" no fundo imobiliário");
     }
 
-    public void sacar() {
+    public void sacarFundoImobiliario (double dinheiroRetirado) {
         if (vencido) {
-            valorMulta = dinheiroAplicado * (taxaMulta / 100);
-            dinheiroAplicado = dinheiroAplicado - valorMulta;
-            System.out.println("Dinheiro aplicado: " + dinheiroAplicado);
-            System.out.println("Valor da multa: " + valorMulta);
-            System.out.println("Dinheiro retirado com multa: " + (dinheiroAplicado - valorMulta));
+            valorMulta = dinheiroRetirado * taxaMulta;
+            saldoFundoImobiliario -= dinheiroRetirado + valorMulta;           
+            System.out.println("Valor da multa (você retirou antes do contrato): R$" + valorMulta);
+            System.out.println("Dinheiro do fundo imobiliário retirado com multa: R$" + (dinheiroRetirado - valorMulta));
         } else {
-            System.out.println("Dinheiro retirado: " + dinheiroAplicado);          
+            System.out.println("Dinheiro retirado do fundo imobilário: R$" + dinheiroAplicado);          
         }
     }
 
-
+    public double getSaldoFundoImobiliario() {
+        return saldoFundoImobiliario;
+    }
 
 }
 
 
 class ContaSalario extends Noobank {
 
-    private int limiteTransacoes, qtdTransacoes, cotasMensais;
-    private double taxa, saldoContaSalario;
+    private int qtdTransacoes, cotasMensais;
+    private double taxa;
 
     public ContaSalario(int nConta, double depositoInicial) {
         super(nConta, depositoInicial);
-        saldoContaSalario += depositoInicial;
     }
 
     public void calcularTaxas() {
         taxa = qtdTransacoes - cotasMensais;         
     }
 
-    public double getTaxa() {
-        return taxa;
+    public void getTaxa() {
+        System.out.println("Taxa de R$"+taxa+" aplicada");
     }
 
-    public int getCotasMensais() {
-        return cotasMensais;
+    public void getCotasMensais() {
+        System.out.println("Quantidade de cotas menais: "+cotasMensais);
     }
 
     public void setCotasMensais(int cotasMensais) {
         this.cotasMensais = cotasMensais;
     }
 
-    public int getQtdTransacoes() {
-        return qtdTransacoes;
+    public void getQtdTransacoes() {
+        System.out.println("Quantidade de transações: "+qtdTransacoes);
     }
 
     public void sacar(double saque) {
         this.saque = saque;
-
-        qtdTransacoes++;
+        qtdTransacoes++;   
+        taxa = qtdTransacoes - cotasMensais;     
 
         if (cotasMensais > qtdTransacoes) {
-            saldoContaSalario -= saque;        
-            System.out.println("Você sacou: "+saque);
-            System.out.println("Saldo atual: "+saldoContaSalario);
+            saldo -= saque;        
+            System.out.println("Você sacou R$"+saque);
         }    
         else {
-            saldoContaSalario -= taxa;
-            saldoContaSalario -= saque;
-            System.out.println("Você sacou: "+saque);
-            System.out.println("Saldo atual: "+saldoContaSalario);
-            System.out.println("Valor da taxa: "+taxa);
+            saldo -= taxa + saque;
+            System.out.println("Você sacou R$"+saque);
         }
     }
 }
 
 class ContaEspecial extends Noobank {   
 
-    double taxaCredito, fatura, saldoContaEspecial;
+    private double taxaCredito, fatura, creditoSolicitado, pcntTaxaJuros, taxaAplicada;
 
     public ContaEspecial(int nConta, double depositoInicial) {
         super(nConta, depositoInicial);
-        saldoContaEspecial += depositoInicial;
     }
 
     public void setTaxaCredito(double taxaCredito) {
         this.taxaCredito = taxaCredito;
     }
 
-    public double getTaxaCredito() {
-        return taxaCredito;
+    public void getTaxaCredito() {
+        System.out.println("A taxa de crédito é "+taxaCredito+"%");
     }
 
-    public void solicitarCredito (double fatura) {
-        this.fatura = fatura;
-        System.out.println("Crédito recebido: "+fatura);        
+    public void solicitarCredito (double creditoSolicitado) {
+        this.creditoSolicitado = creditoSolicitado;
+        fatura += creditoSolicitado;
+        System.out.println("Crédito recebido R$"+creditoSolicitado);        
     }
 
     public void aplicarJuros() {
-        fatura += (fatura * (taxaCredito/100));
-        System.out.println("Juros aplicado no crédito");
+        pcntTaxaJuros = taxaCredito / 100;
+        taxaAplicada = fatura * pcntTaxaJuros;
+        fatura += taxaAplicada;
+        System.out.println("Juros aplicado na fatura, valor de R$"+taxaAplicada);
     }
 
-    public void sacar() {
-        saldoContaEspecial -= saque;
-        System.out.println("Valor da fatura atrasada com acrescimo de "+taxaCredito+"%: "+fatura);
-        System.out.println("Você sacou: "+saque);
-        System.out.println("Saldo atual da conta: "+saldoContaEspecial);
+    public void getFatura() {
+        System.out.println("Valor atual da fatura R$"+fatura);
     }
 }
 
@@ -206,50 +204,59 @@ public class Main {
     public static void main(String[] args) {
         
        // Conta genérica
-        System.out.println("\nConta genérica: ");
-        Noobank noobank = new Noobank(122, 200);
+        System.out.println("CONTA GENÉRICA: ");
+        Noobank noobank = new Noobank(111, 300);
         noobank.getSaldo();
-        noobank.depositar(370);
+        noobank.depositar(130);
         noobank.getSaldo();
         noobank.sacar(300);
         noobank.getSaldo();
-        noobank.credito(1000);
+        noobank.credito(100);
+        noobank.resetSaldo();
 
         // Conta Poupança
-        System.out.println("\nConta poupança: ");
-        ContaPoupanca poupanca = new ContaPoupanca(123, 300);
-        poupanca.setJuros(3);
+        System.out.println("\nCONTA POUPANÇA: ");
+        ContaPoupanca poupanca = new ContaPoupanca(222, 100);
         poupanca.getSaldo();
+        poupanca.setJuros(3);
+        poupanca.getTaxaJuros();
         poupanca.pagarJuros();
+        poupanca.getSaldo();
+        poupanca.resetSaldo();
     
         // Conta Aplicação
-        System.out.println("\nConta aplicação: ");
-        ContaAplicacao contaAplicacao = new ContaAplicacao(124, 400, 5);
+        System.out.println("\nCONTA APLICAÇÃO: ");
+        ContaAplicacao contaAplicacao = new ContaAplicacao(333, 400, 5);
         contaAplicacao.setTaxaJuros(5);
+        contaAplicacao.aplicarDinheiro(100);
+        contaAplicacao.getVencida();
         contaAplicacao.getTaxaJuros();
-        contaAplicacao.AplicarDinheiro(50.000);
-        contaAplicacao.estaVencida();
-        contaAplicacao.sacar();
+        contaAplicacao.sacarFundoImobiliario(100);
+        contaAplicacao.resetSaldo();
 
         // Conta Salário
-        System.out.println("\nConta salário: ");
-        ContaSalario contaSalario = new ContaSalario (125, 2500);
+        System.out.println("\nCONTA SALARIO: ");
+        ContaSalario contaSalario = new ContaSalario (444, 2500);
         contaSalario.setCotasMensais(2);
         contaSalario.getCotasMensais();
         contaSalario.getQtdTransacoes();
-        contaSalario.sacar(1);
-        contaSalario.sacar(1);
+        contaSalario.sacar(10);
+        contaSalario.sacar(10);
+        contaSalario.getSaldo();
         contaSalario.getQtdTransacoes();
         contaSalario.calcularTaxas();
-        contaSalario.sacar(2);
+        contaSalario.sacar(20);
+        contaSalario.resetSaldo();
+        contaSalario.getTaxa();
 
         // Conta Especial
-        System.out.println("\nConta especial: ");
-        ContaEspecial contaEspecial = new ContaEspecial(126, 7000);
+        System.out.println("\nCONTA ESPECIAL: ");
+        ContaEspecial contaEspecial = new ContaEspecial(555, 7000);
         contaEspecial.setTaxaCredito(20);
         contaEspecial.getTaxaCredito();
         contaEspecial.solicitarCredito(20000);
         contaEspecial.aplicarJuros();
-        contaEspecial.sacar(500);
+        contaEspecial.getFatura();
+        contaEspecial.resetSaldo();
     }   
 }
