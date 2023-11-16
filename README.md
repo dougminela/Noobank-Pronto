@@ -1,2 +1,2 @@
 # Noobank-Pronto
-# Ainda nao finalizei porque falta funcionar os outros metodos das contas filhas
+# Professora, fiz algumas alterações para corrigir/melhorar o codigo, se me permite, enviarei novamente aqui o novo arquivo.
